@@ -1,0 +1,43 @@
+{
+  "name": "@terra-graph/icons-aws",
+  "version": "0.1.0",
+  "description": "AWS icon package for Terra Graph with Terraform resource name lookups.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/terra-graph/icons"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "generated",
+    "mappings",
+    "vendor",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./generated/aws-icon-manifest.json": "./generated/aws-icon-manifest.json",
+    "./mappings/terraform-aws-icons.json": "./mappings/terraform-aws-icons.json",
+    "./vendor/*": "./vendor/*"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts",
+    "clean": "rimraf dist",
+    "generate": "node ./scripts/generate-aws-manifest.mjs",
+    "generate:manifest": "node ./scripts/generate-aws-manifest.mjs",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "scaffold:mappings": "node ./scripts/scaffold-terraform-mappings.mjs",
+    "semantic-release": "semantic-release",
+    "validate:mappings": "node ./scripts/validate-mappings.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10"
+  }
+}

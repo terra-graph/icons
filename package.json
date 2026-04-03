@@ -1,0 +1,33 @@
+{
+  "name": "@terra-graph/icons",
+  "private": true,
+  "license": "Apache-2.0",
+  "packageManager": "yarn@4.9.1",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "yarn workspaces foreach -A run build",
+    "clean": "yarn workspaces foreach -A run clean",
+    "commitlint": "commitlint",
+    "generate": "yarn workspace @terra-graph/icons-aws run generate",
+    "lint": "yarn workspaces foreach -A run lint",
+    "lint:ci": "yarn workspaces foreach -A run lint",
+    "typecheck": "yarn workspaces foreach -A run typecheck"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.0",
+    "@commitlint/config-conventional": "^19.8.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.0",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/npm": "^12.0.1",
+    "@semantic-release/release-notes-generator": "^14.0.2",
+    "conventional-changelog-conventionalcommits": "^9.1.0",
+    "rimraf": "^6.0.1",
+    "semantic-release": "^24.2.0",
+    "semantic-release-monorepo": "^8.0.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.3"
+  }
+}
