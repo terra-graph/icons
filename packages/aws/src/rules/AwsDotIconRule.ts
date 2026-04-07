@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import {
   type AdapterOperations,
   DotAdapter,
@@ -5,7 +6,6 @@ import {
   NodeRule,
   type TgNodeAttributes,
 } from '@terra-graph/core';
-import { fileURLToPath } from 'node:url';
 import { AwsIcon } from '../AwsIcon.js';
 
 export interface DotNodeOptions extends Record<string, unknown> {
@@ -99,9 +99,7 @@ export class AwsDotIconRule extends NodeRule {
 
     const iconUrl = icon.url();
     const iconFilePath =
-      this.options.imageMode === 'filePath'
-        ? normalizeFilePath(icon.filePath())
-        : undefined;
+      this.options.imageMode === 'filePath' ? normalizeFilePath(icon.filePath()) : undefined;
     const image = iconFilePath ?? iconUrl;
 
     const adapterKey = DotAdapter.name;
