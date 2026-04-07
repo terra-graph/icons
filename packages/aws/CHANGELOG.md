@@ -1,3 +1,9 @@
+## [1.0.0-rc.3](https://github.com/terra-graph/icons/compare/terra-graph-icons-aws@1.0.0-rc.2...terra-graph-icons-aws@1.0.0-rc.3) (2026-04-07)
+
+### Bug Fixes
+
+* make the provider the default export ([c78ee37](https://github.com/terra-graph/icons/commit/c78ee3791ac8fc0ec72886b825e6ea347d89a1fc))
+
 ## [1.0.0-rc.2](https://github.com/terra-graph/icons/compare/terra-graph-icons-aws@1.0.0-rc.1...terra-graph-icons-aws@1.0.0-rc.2) (2026-04-07)
 
 ### Bug Fixes
