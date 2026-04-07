@@ -116,3 +116,5 @@ export class AwsDotIconRule extends NodeRule {
     });
   }
 }
+
+NodeRule.register(AwsDotIconRule);
