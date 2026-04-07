@@ -5,6 +5,7 @@ import {
   NodeRule,
   type TgNodeAttributes,
 } from '@terra-graph/core';
+import { fileURLToPath } from 'node:url';
 import { AwsIcon } from '../AwsIcon.js';
 
 export interface DotNodeOptions extends Record<string, unknown> {
@@ -40,7 +41,7 @@ export interface DotIconRuleOptions extends Record<string, unknown> {
 
 const resolveOptions = (options: DotIconRuleOptions | undefined): ResolvedAwsDotIconOptions => {
   return {
-    imageMode: options?.imageMode ?? 'url',
+    imageMode: options?.imageMode ?? 'filePath',
     dot: { ...defaultDotAttributes, ...(options?.dot ?? {}) },
   };
 };
@@ -53,6 +54,13 @@ const getTerraformResource = (node: TgNodeAttributes): string | undefined => {
 
   const resource = (terraform as Record<string, unknown>).resource;
   return typeof resource === 'string' ? resource : undefined;
+};
+
+const normalizeFilePath = (value: string): string => {
+  if (value.startsWith('file://')) {
+    return fileURLToPath(value);
+  }
+  return value;
 };
 
 export class AwsDotIconRule extends NodeRule {
@@ -90,7 +98,10 @@ export class AwsDotIconRule extends NodeRule {
     }
 
     const iconUrl = icon.url();
-    const iconFilePath = this.options.imageMode === 'filePath' ? icon.filePath() : undefined;
+    const iconFilePath =
+      this.options.imageMode === 'filePath'
+        ? normalizeFilePath(icon.filePath())
+        : undefined;
     const image = iconFilePath ?? iconUrl;
 
     const adapterKey = DotAdapter.name;

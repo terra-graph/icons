@@ -46,6 +46,30 @@ const lambdaIcon = AwsIcon.fromTerraformResource("aws_lambda_function")?.url();
 const allIcons = terraformAwsIconMap;
 ```
 
+## Dot plugin
+
+`@terra-graph/icons-aws:plugin:dot` decorates nodes that have a
+`terraform.resource` attribute starting with `aws_`. It sets dot adapter
+attributes (including `image`) so Graphviz can render the AWS icon.
+
+The default `imageMode` is `filePath` (absolute filesystem path). Use `url`
+for browser contexts.
+
+```yaml
+providers:
+  - "@terra-graph/icons-aws"
+
+profiles:
+  my_profile:
+    plugins:
+      - plugin: "@terra-graph/icons-aws:plugin:dot"
+        options:
+          imageMode: filePath
+          dot:
+            labelloc: b
+            imagescale: true
+```
+
 ## Mapping strategy
 
 - `generated/aws-icon-manifest.json` is generated from files on disk
