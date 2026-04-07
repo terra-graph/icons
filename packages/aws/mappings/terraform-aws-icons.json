@@ -44,7 +44,7 @@
   "aws_cloudwatch_log_delivery_source": "amazon-cloudwatch-logs",
   "aws_cloudwatch_log_delivery": "amazon-cloudwatch-logs",
   "aws_cloudwatch_log_delivery_destination": "amazon-cloudwatch-logs",
-  "aws_kinesis_firehose_delivery_stream" :"amazon-kinesis",
+  "aws_kinesis_firehose_delivery_stream": "amazon-kinesis",
   "aws_timestreamwrite_database": "amazon-timestream",
   "aws_timestreamwrite_table": "amazon-timestream",
   "aws_acm_certificate": "aws-certificate-manager"

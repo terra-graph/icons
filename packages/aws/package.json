@@ -31,13 +31,18 @@
     "clean": "rimraf dist",
     "generate": "node ./scripts/generate-aws-manifest.mjs",
     "generate:manifest": "node ./scripts/generate-aws-manifest.mjs",
-    "lint": "tsc -p tsconfig.json --noEmit",
+    "lint": "biome check --write .",
     "scaffold:mappings": "node ./scripts/scaffold-terraform-mappings.mjs",
     "semantic-release": "semantic-release",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --config jest.config.cjs --coverage",
     "validate:mappings": "node ./scripts/validate-mappings.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
+  "peerDependencies": {
+    "@terra-graph/core": "^1.0.0-rc.4"
+  },
   "devDependencies": {
+    "@terra-graph/core": "^1.0.0-rc.4",
     "@types/node": "^22.13.10"
   }
 }

@@ -83,11 +83,8 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           cache: yarn
 
-      - name: Enable Corepack
-        run: corepack enable
-
       - name: Install dependencies
-        run: yarn install --immutable
+        run: yarn install --frozen-lockfile
 
       - name: Configure npm auth
         env:
@@ -113,6 +110,9 @@ jobs:
 
       - name: Build
         run: yarn build
+
+      - name: Test
+        run: yarn workspace "${{ matrix.workspace }}" test
 
       - name: Validate mappings
         run: yarn workspace @terra-graph/icons-aws validate:mappings

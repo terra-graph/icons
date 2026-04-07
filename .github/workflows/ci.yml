@@ -22,11 +22,8 @@ jobs:
           node-version: 24.x
           cache: yarn
 
-      - name: Enable Corepack
-        run: corepack enable
-
       - name: Install dependencies
-        run: yarn install --immutable
+        run: yarn install --frozen-lockfile
 
       - name: Validate commit messages (pull request)
         if: github.event_name == 'pull_request'
@@ -61,7 +58,7 @@ jobs:
         run: corepack enable
 
       - name: Install dependencies
-        run: yarn install --immutable
+        run: yarn install --frozen-lockfile
 
       - name: Lint
         run: yarn lint:ci
@@ -71,6 +68,9 @@ jobs:
 
       - name: Build
         run: yarn build
+
+      - name: Test
+        run: yarn test
 
       - name: Validate mappings
         run: yarn workspace @terra-graph/icons-aws validate:mappings

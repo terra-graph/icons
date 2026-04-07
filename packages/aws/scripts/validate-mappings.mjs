@@ -1,23 +1,23 @@
-import fs from "node:fs";
-import path from "node:path";
+import fs from 'node:fs';
+import path from 'node:path';
 
-const packageRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
-const manifestPath = path.join(packageRoot, "generated", "aws-icon-manifest.json");
-const mappingsPath = path.join(packageRoot, "mappings", "terraform-aws-icons.json");
+const packageRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
+const manifestPath = path.join(packageRoot, 'generated', 'aws-icon-manifest.json');
+const mappingsPath = path.join(packageRoot, 'mappings', 'terraform-aws-icons.json');
 
 function readJson(filePath) {
   if (!fs.existsSync(filePath)) {
     throw new Error(`Missing required file: ${filePath}`);
   }
 
-  const raw = fs.readFileSync(filePath, "utf8");
+  const raw = fs.readFileSync(filePath, 'utf8');
   return JSON.parse(raw);
 }
 
 function formatIconKey(value) {
-  if (typeof value === "string") return value;
-  if (value === null) return "null";
-  if (value === undefined) return "undefined";
+  if (typeof value === 'string') return value;
+  if (value === null) return 'null';
+  if (value === undefined) return 'undefined';
   return JSON.stringify(value);
 }
 
@@ -35,7 +35,7 @@ function main() {
   let validCount = 0;
 
   for (const [resourceName, iconKey] of mappingEntries) {
-    const isValid = typeof iconKey === "string" && iconKey in manifestIcons;
+    const isValid = typeof iconKey === 'string' && iconKey in manifestIcons;
 
     if (isValid) {
       validCount += 1;
@@ -51,11 +51,9 @@ function main() {
   console.log(`Invalid mappings: ${invalid.length}`);
 
   if (invalid.length > 0) {
-    const sortedInvalid = invalid.sort((a, b) =>
-      a.resourceName.localeCompare(b.resourceName)
-    );
+    const sortedInvalid = invalid.sort((a, b) => a.resourceName.localeCompare(b.resourceName));
 
-    console.log("Invalid mappings (missing icon key):");
+    console.log('Invalid mappings (missing icon key):');
     for (const entry of sortedInvalid) {
       console.log(`- ${entry.resourceName}: ${formatIconKey(entry.iconKey)}`);
     }

@@ -1,38 +1,38 @@
 module.exports = ({ packageDir, packageName, scope }) => ({
-  branches: ["main"],
-  extends: ["semantic-release-monorepo"],
+  branches: ['main'],
+  extends: ['semantic-release-monorepo'],
   tagFormat: `${packageName}@\${version}`,
   plugins: [
     [
-      "@semantic-release/commit-analyzer",
+      '@semantic-release/commit-analyzer',
       {
-        preset: "conventionalcommits"
-      }
+        preset: 'conventionalcommits',
+      },
     ],
     [
-      "@semantic-release/release-notes-generator",
+      '@semantic-release/release-notes-generator',
       {
-        preset: "conventionalcommits"
-      }
+        preset: 'conventionalcommits',
+      },
     ],
     [
-      "@semantic-release/changelog",
+      '@semantic-release/changelog',
       {
-        changelogFile: `${packageDir}/CHANGELOG.md`
-      }
+        changelogFile: `${packageDir}/CHANGELOG.md`,
+      },
     ],
     [
-      "@semantic-release/npm",
+      '@semantic-release/npm',
       {
-        pkgRoot: packageDir
-      }
+        pkgRoot: packageDir,
+      },
     ],
     [
-      "@semantic-release/git",
+      '@semantic-release/git',
       {
         assets: [`${packageDir}/package.json`, `${packageDir}/CHANGELOG.md`],
-        message: `chore(${scope}): release \${nextRelease.version} [skip ci]\n\n\${nextRelease.notes}`
-      }
-    ]
-  ]
+        message: `chore(${scope}): release \${nextRelease.version} [skip ci]\n\n\${nextRelease.notes}`,
+      },
+    ],
+  ],
 });

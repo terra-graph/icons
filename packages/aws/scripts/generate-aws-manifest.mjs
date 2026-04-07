@@ -1,9 +1,9 @@
-import fs from "node:fs";
-import path from "node:path";
+import fs from 'node:fs';
+import path from 'node:path';
 
-const packageRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
-const vendorRoot = path.join(packageRoot, "vendor", "aws");
-const outputPath = path.join(packageRoot, "generated", "aws-icon-manifest.json");
+const packageRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
+const vendorRoot = path.join(packageRoot, 'vendor', 'aws');
+const outputPath = path.join(packageRoot, 'generated', 'aws-icon-manifest.json');
 
 function walk(dir) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
@@ -16,7 +16,7 @@ function walk(dir) {
       continue;
     }
 
-    if (entry.isFile() && entry.name.endsWith(".svg")) {
+    if (entry.isFile() && entry.name.endsWith('.svg')) {
       files.push(fullPath);
     }
   }
@@ -25,28 +25,28 @@ function walk(dir) {
 }
 
 function toPosix(relativePath) {
-  return relativePath.split(path.sep).join("/");
+  return relativePath.split(path.sep).join('/');
 }
 
 function filenameToLabel(filename) {
   return filename
-    .replace(/\.svg$/i, "")
-    .replace(/^Arch_/, "")
-    .replace(/^Res_/, "")
-    .replace(/_(16|32|48|64|128)$/i, "")
-    .replace(/[-_]+/g, " ")
+    .replace(/\.svg$/i, '')
+    .replace(/^Arch_/, '')
+    .replace(/^Res_/, '')
+    .replace(/_(16|32|48|64|128)$/i, '')
+    .replace(/[-_]+/g, ' ')
     .trim();
 }
 
 function filenameToKey(filename) {
   return filename
-    .replace(/\.svg$/i, "")
-    .replace(/^Arch_/, "")
-    .replace(/^Res_/, "")
-    .replace(/_(16|32|48|64|128)$/i, "")
+    .replace(/\.svg$/i, '')
+    .replace(/^Arch_/, '')
+    .replace(/^Res_/, '')
+    .replace(/_(16|32|48|64|128)$/i, '')
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }
 
 function chooseBetterIcon(existingPath, candidatePath) {
@@ -95,12 +95,12 @@ function main() {
       key,
       label,
       path: chosenPath,
-      filename: path.basename(chosenPath)
+      filename: path.basename(chosenPath),
     };
   }
 
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-  fs.writeFileSync(outputPath, JSON.stringify({ icons }, null, 2) + "\n", "utf8");
+  fs.writeFileSync(outputPath, `${JSON.stringify({ icons }, null, 2)}\n`, 'utf8');
 
   console.log(`Scanned ${svgFiles.length} SVG files`);
   console.log(`Wrote ${Object.keys(icons).length} icon entries to ${outputPath}`);

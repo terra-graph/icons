@@ -1,17 +1,13 @@
-import { fileURLToPath } from "node:url";
-import awsIconManifest from "../generated/aws-icon-manifest.json";
-import terraformAwsIconMappings from "../mappings/terraform-aws-icons.json";
-import type { AwsIconManifest, AwsIconManifestEntry } from "./index.js";
+import { fileURLToPath } from 'node:url';
+import awsIconManifest from '../generated/aws-icon-manifest.json';
+import terraformAwsIconMappings from '../mappings/terraform-aws-icons.json';
+import type { AwsIconManifest, AwsIconManifestEntry } from './index.js';
 
 const manifest = awsIconManifest as AwsIconManifest;
 const mappings = terraformAwsIconMappings as Record<string, string>;
 
 function toModuleRelativePath(iconPath: string): string {
-  if (
-    iconPath.startsWith("/") ||
-    iconPath.startsWith("./") ||
-    iconPath.startsWith("../")
-  ) {
+  if (iconPath.startsWith('/') || iconPath.startsWith('./') || iconPath.startsWith('../')) {
     return iconPath;
   }
 
@@ -27,18 +23,13 @@ function toFilePath(iconPath: string): string {
 }
 
 function isNodeRuntime(): boolean {
-  return (
-    typeof process !== "undefined" &&
-    typeof process.versions?.node === "string"
-  );
+  return typeof process !== 'undefined' && typeof process.versions?.node === 'string';
 }
 
 export class AwsIcon {
   private constructor(private readonly entry: AwsIconManifestEntry) {}
 
-  public static fromTerraformResource(
-    terraformResourceName: string,
-  ): AwsIcon | undefined {
+  public static fromTerraformResource(terraformResourceName: string): AwsIcon | undefined {
     const iconKey = mappings[terraformResourceName];
     const iconEntry = iconKey ? manifest.icons[iconKey] : undefined;
     return iconEntry ? new AwsIcon(iconEntry) : undefined;
@@ -75,7 +66,7 @@ export class AwsIcon {
 
   public filePath(): string {
     if (!isNodeRuntime()) {
-      throw new Error("AwsIcon.filePath is Node-only");
+      throw new Error('AwsIcon.filePath is Node-only');
     }
 
     return toFilePath(this.entry.path);
