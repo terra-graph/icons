@@ -9,9 +9,6 @@ const config = {
   testMatch: ['<rootDir>/src/**/*.test.ts'],
   extensionsToTreatAsEsm: ['.ts'],
   moduleNameMapper: {
-    '^@terra-graph/core$': '<rootDir>/../../../core/src/index.ts',
-    '^@terra-graph/core/(.*)\\.js$': '<rootDir>/../../../core/src/$1.ts',
-    '^@terra-graph/core/(.*)$': '<rootDir>/../../../core/src/$1.ts',
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
   moduleFileExtensions: ['ts', 'js'],
