@@ -1,3 +1,9 @@
+## [1.0.0-rc.4](https://github.com/terra-graph/icons/compare/terra-graph-icons-aws@1.0.0-rc.3...terra-graph-icons-aws@1.0.0-rc.4) (2026-04-07)
+
+### Bug Fixes
+
+* register all rules provided by the package ([7844dee](https://github.com/terra-graph/icons/commit/7844deeb859a1b6c529e3e5a03b12358ad4b701c))
+
 ## [1.0.0-rc.3](https://github.com/terra-graph/icons/compare/terra-graph-icons-aws@1.0.0-rc.2...terra-graph-icons-aws@1.0.0-rc.3) (2026-04-07)
 
 ### Bug Fixes
