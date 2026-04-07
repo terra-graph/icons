@@ -1,3 +1,9 @@
+## [1.0.0-rc.2](https://github.com/terra-graph/icons/compare/terra-graph-icons-aws@1.0.0-rc.1...terra-graph-icons-aws@1.0.0-rc.2) (2026-04-07)
+
+### Bug Fixes
+
+* correct publish config ([13dabc5](https://github.com/terra-graph/icons/commit/13dabc50570c4ad6b59b8f623e76bbb050397292))
+
 ## 1.0.0-rc.1 (2026-04-07)
 
 ### Features
