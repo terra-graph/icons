@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url';
+import { jest } from '@jest/globals';
 import {
   DotAdapter,
   GraphologyAdapter,
@@ -95,7 +97,7 @@ describe('AwsDotIconRule', () => {
     expect(icon).toBeDefined();
 
     const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
-    expect(dotAttrs.image).toBe(icon?.url());
+    expect(dotAttrs.image).toBe(icon?.filePath());
     expect(dotAttrs.shape).toBe('plaintext');
   });
 
@@ -130,6 +132,63 @@ describe('AwsDotIconRule', () => {
     const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
     expect(dotAttrs.image).toBe(icon?.filePath());
     expect(dotAttrs.shape).toBe('box');
+  });
+
+  it('uses url images when imageMode is url', () => {
+    const rule = new AwsDotIconRule({ imageMode: 'url' });
+    const { graph, nodeId } = makeGraph('aws_lambda_function');
+    const adapter = new DotAdapter().withTgGraph(graph);
+    const node = adapter.getNodeAttributes(nodeId);
+    if (!node) {
+      throw new Error('missing node');
+    }
+
+    expect(rule.match(nodeId, node, adapter)).toBe(true);
+    const updated = rule.apply(nodeId, node, adapter) as DotAdapter;
+    const updatedNode = updated.getNodeAttributes(nodeId);
+    if (!updatedNode) {
+      throw new Error('missing updated node');
+    }
+
+    const icon = AwsIcon.fromTerraformResource('aws_lambda_function');
+    expect(icon).toBeDefined();
+
+    const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
+    expect(dotAttrs.image).toBe(icon?.url());
+  });
+
+  it('normalizes file URLs when using filePath mode', () => {
+    const rule = new AwsDotIconRule({ imageMode: 'filePath' });
+    const { graph, nodeId } = makeGraph('aws_lambda_function');
+    const adapter = new DotAdapter().withTgGraph(graph);
+    const node = adapter.getNodeAttributes(nodeId);
+    if (!node) {
+      throw new Error('missing node');
+    }
+
+    const fakeFileUrl = 'file:///tmp/aws-icon.svg';
+    const spy = jest.spyOn(AwsIcon, 'fromTerraformResource').mockReturnValue({
+      url: () => fakeFileUrl,
+      filePath: () => fakeFileUrl,
+      key: 'fake',
+      label: 'Fake',
+      path: fakeFileUrl,
+      filename: 'aws-icon.svg',
+    } as unknown as AwsIcon);
+
+    try {
+      expect(rule.match(nodeId, node, adapter)).toBe(true);
+      const updated = rule.apply(nodeId, node, adapter) as DotAdapter;
+      const updatedNode = updated.getNodeAttributes(nodeId);
+      if (!updatedNode) {
+        throw new Error('missing updated node');
+      }
+
+      const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
+      expect(dotAttrs.image).toBe(fileURLToPath(fakeFileUrl));
+    } finally {
+      spy.mockRestore();
+    }
   });
 
   it('returns early if a matched node loses terraform data', () => {
