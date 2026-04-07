@@ -7,6 +7,9 @@
     "type": "git",
     "url": "https://github.com/terra-graph/icons"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
