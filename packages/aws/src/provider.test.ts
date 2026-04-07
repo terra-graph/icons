@@ -1,6 +1,6 @@
 import { GraphPluginRegistry } from '@terra-graph/core';
 import { AWS_DOT_ICON_PLUGIN_NAME, AwsDotIconPlugin } from './plugins/AwsDotIconPlugin.js';
-import { provider } from './provider.js';
+import provider from './provider.js';
 
 describe('aws icons provider.', () => {
   it('should register the aws dot icon plugin', () => {

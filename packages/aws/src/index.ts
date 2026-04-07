@@ -3,7 +3,7 @@ import terraformAwsIconMappings from '../mappings/terraform-aws-icons.json';
 import { AwsIcon } from './AwsIcon.js';
 export * from './plugins/AwsDotIconPlugin.js';
 export * from './rules/index.js';
-export * from './provider.js';
+export { default } from './provider.js';
 
 export interface AwsIconManifestEntry {
   key: string;
