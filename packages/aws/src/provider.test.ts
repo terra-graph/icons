@@ -3,7 +3,7 @@ import { AWS_DOT_ICON_PLUGIN_NAME, AwsDotIconPlugin } from './plugins/AwsDotIcon
 import { provider } from './provider.js';
 
 describe('aws icons provider.', () => {
-  it('registers the aws dot icon plugin', () => {
+  it('should register the aws dot icon plugin', () => {
     const runtimeProvider = provider();
     expect(runtimeProvider.plugins).toBeInstanceOf(GraphPluginRegistry);
 
