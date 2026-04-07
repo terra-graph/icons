@@ -2,10 +2,13 @@ import awsIconManifest from '../generated/aws-icon-manifest.json';
 import terraformAwsIconMappings from '../mappings/terraform-aws-icons.json';
 import { AwsIcon } from './AwsIcon.js';
 import './rules/registerAll.js';
+import provider from './provider.js';
 
 export * from './plugins/AwsDotIconPlugin.js';
 export * from './rules/index.js';
-export { default } from './provider.js';
+export { provider };
+export const runtimeProvider = provider;
+export default provider;
 
 export interface AwsIconManifestEntry {
   key: string;
