@@ -1,3 +1,10 @@
+## [1.0.0-rc.6](https://github.com/terra-graph/icons/compare/terra-graph-icons-aws@1.0.0-rc.5...terra-graph-icons-aws@1.0.0-rc.6) (2026-04-07)
+
+### Bug Fixes
+
+* file path for dot rendering ([bdb1396](https://github.com/terra-graph/icons/commit/bdb1396fa241c93da24bf4ad926488f29052aaed))
+* tests ([2255c25](https://github.com/terra-graph/icons/commit/2255c25ecfb09b170b2362e90d2609a052444820))
+
 ## [1.0.0-rc.5](https://github.com/terra-graph/icons/compare/terra-graph-icons-aws@1.0.0-rc.4...terra-graph-icons-aws@1.0.0-rc.5) (2026-04-07)
 
 ### Bug Fixes
