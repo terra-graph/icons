@@ -1,3 +1,9 @@
+## [1.0.0-rc.8](https://github.com/terra-graph/icons/compare/terra-graph-icons-aws@1.0.0-rc.7...terra-graph-icons-aws@1.0.0-rc.8) (2026-04-08)
+
+### Bug Fixes
+
+* correctly serialize options for AwsDotIconRule ([7addfa2](https://github.com/terra-graph/icons/commit/7addfa21f0b857503137c6bd666fbe189d84d4ec))
+
 ## [1.0.0-rc.7](https://github.com/terra-graph/icons/compare/terra-graph-icons-aws@1.0.0-rc.6...terra-graph-icons-aws@1.0.0-rc.7) (2026-04-08)
 
 ### Features

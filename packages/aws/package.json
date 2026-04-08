@@ -1,6 +1,6 @@
 {
   "name": "@terra-graph/icons-aws",
-  "version": "1.0.0-rc.7",
+  "version": "1.0.0-rc.8",
   "description": "AWS icon package for Terra Graph with Terraform resource name lookups.",
   "license": "Apache-2.0",
   "repository": {
