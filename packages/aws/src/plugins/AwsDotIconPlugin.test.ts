@@ -65,7 +65,7 @@ describe('AwsDotIconPlugin', () => {
     expect(icon).toBeDefined();
 
     const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
-    expect(dotAttrs.image).toBe(icon?.filePath());
+    expect(dotAttrs.image).toBe(icon?.filePath('svg'));
     expect(dotAttrs.shape).toBe('box');
   });
 });

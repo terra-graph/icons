@@ -16,7 +16,7 @@ function walk(dir) {
       continue;
     }
 
-    if (entry.isFile() && entry.name.endsWith('.svg')) {
+    if (entry.isFile() && (entry.name.endsWith('.svg') || entry.name.endsWith('.png'))) {
       files.push(fullPath);
     }
   }
@@ -30,7 +30,7 @@ function toPosix(relativePath) {
 
 function filenameToLabel(filename) {
   return filename
-    .replace(/\.svg$/i, '')
+    .replace(/\.(svg|png)$/i, '')
     .replace(/^Arch_/, '')
     .replace(/^Res_/, '')
     .replace(/_(16|32|48|64|128)$/i, '')
@@ -40,7 +40,7 @@ function filenameToLabel(filename) {
 
 function filenameToKey(filename) {
   return filename
-    .replace(/\.svg$/i, '')
+    .replace(/\.(svg|png)$/i, '')
     .replace(/^Arch_/, '')
     .replace(/^Res_/, '')
     .replace(/_(16|32|48|64|128)$/i, '')
@@ -77,32 +77,46 @@ function main() {
     throw new Error(`Vendor directory not found: ${vendorRoot}`);
   }
 
-  const svgFiles = walk(vendorRoot);
+  const iconFiles = walk(vendorRoot);
   const icons = {};
 
-  for (const absolutePath of svgFiles) {
+  for (const absolutePath of iconFiles) {
     const relativePath = toPosix(path.relative(packageRoot, absolutePath));
     const filename = path.basename(absolutePath);
+    const ext = path.extname(filename).toLowerCase();
+    const format = ext === '.svg' ? 'svg' : ext === '.png' ? 'png' : null;
+    if (!format) continue;
     const key = filenameToKey(filename);
     const label = filenameToLabel(filename);
 
     if (!key) continue;
 
-    const existing = icons[key];
-    const chosenPath = chooseBetterIcon(existing?.path, relativePath);
+    const existing = icons[key] || { key, label, formats: {} };
+    if (!existing.label) {
+      existing.label = label;
+    }
 
-    icons[key] = {
-      key,
-      label,
+    const formats = existing.formats || {};
+    const existingEntry = formats[format];
+    const existingPath = existingEntry ? existingEntry.path : undefined;
+    const chosenPath = chooseBetterIcon(existingPath, relativePath);
+
+    formats[format] = {
       path: chosenPath,
       filename: path.basename(chosenPath),
     };
+
+    existing.formats = formats;
+    icons[key] = existing;
   }
 
-  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+  const outputDir = path.dirname(outputPath);
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir);
+  }
   fs.writeFileSync(outputPath, `${JSON.stringify({ icons }, null, 2)}\n`, 'utf8');
 
-  console.log(`Scanned ${svgFiles.length} SVG files`);
+  console.log(`Scanned ${iconFiles.length} icon files`);
   console.log(`Wrote ${Object.keys(icons).length} icon entries to ${outputPath}`);
 }
 

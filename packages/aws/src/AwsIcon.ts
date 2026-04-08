@@ -1,7 +1,12 @@
 import { fileURLToPath } from 'node:url';
 import awsIconManifest from '../generated/aws-icon-manifest.json';
 import terraformAwsIconMappings from '../mappings/terraform-aws-icons.json';
-import type { AwsIconManifest, AwsIconManifestEntry } from './index.js';
+import type {
+  AwsIconFormat,
+  AwsIconManifest,
+  AwsIconManifestEntry,
+  AwsIconManifestFormatEntry,
+} from './index.js';
 
 const manifest = awsIconManifest as AwsIconManifest;
 const mappings = terraformAwsIconMappings as Record<string, string>;
@@ -52,23 +57,36 @@ export class AwsIcon {
     return this.entry.label;
   }
 
-  public get path(): string {
-    return this.entry.path;
+  public hasFormat(format: AwsIconFormat): boolean {
+    return Boolean(this.entry.formats?.[format]);
   }
 
-  public get filename(): string {
-    return this.entry.filename;
+  public path(format: AwsIconFormat): string {
+    return this.getFormatEntry(format).path;
   }
 
-  public url(): string {
-    return toBrowserUrl(this.entry.path);
+  public filename(format: AwsIconFormat): string {
+    return this.getFormatEntry(format).filename;
   }
 
-  public filePath(): string {
+  public url(format: AwsIconFormat): string {
+    return toBrowserUrl(this.getFormatEntry(format).path);
+  }
+
+  public filePath(format: AwsIconFormat): string {
     if (!isNodeRuntime()) {
       throw new Error('AwsIcon.filePath is Node-only');
     }
 
-    return toFilePath(this.entry.path);
+    return toFilePath(this.getFormatEntry(format).path);
+  }
+
+  private getFormatEntry(format: AwsIconFormat): AwsIconManifestFormatEntry {
+    const entry = this.entry.formats?.[format];
+    if (!entry) {
+      throw new Error(`AwsIcon missing ${format} format for ${this.entry.key}`);
+    }
+
+    return entry;
   }
 }

@@ -42,7 +42,7 @@ yarn build
 ```ts
 import { AwsIcon, terraformAwsIconMap } from "@terra-graph/icons-aws";
 
-const lambdaIcon = AwsIcon.fromTerraformResource("aws_lambda_function")?.url();
+const lambdaIcon = AwsIcon.fromTerraformResource("aws_lambda_function")?.url("svg");
 const allIcons = terraformAwsIconMap;
 ```
 
@@ -65,6 +65,7 @@ profiles:
       - plugin: "@terra-graph/icons-aws:plugin:dot"
         options:
           imageMode: filePath
+          imageFormat: svg
           dot:
             labelloc: b
             imagescale: true

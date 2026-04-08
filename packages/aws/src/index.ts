@@ -13,12 +13,18 @@ export default provider;
 export interface AwsIconManifestEntry {
   key: string;
   label: string;
-  path: string;
-  filename: string;
+  formats: Partial<Record<AwsIconFormat, AwsIconManifestFormatEntry>>;
 }
 
 export interface AwsIconManifest {
   icons: Record<string, AwsIconManifestEntry>;
+}
+
+export type AwsIconFormat = 'svg' | 'png';
+
+export interface AwsIconManifestFormatEntry {
+  path: string;
+  filename: string;
 }
 
 const manifest = awsIconManifest as AwsIconManifest;
@@ -34,7 +40,7 @@ export const terraformAwsIconMap: Record<string, string> = Object.fromEntries(
   Object.entries(mappings)
     .map(([terraformResourceName, iconKey]) => {
       const icon = AwsIcon.fromManifestKey(iconKey);
-      return icon ? [terraformResourceName, icon.url()] : null;
+      return icon ? [terraformResourceName, icon.url('svg')] : null;
     })
     .filter((entry): entry is [string, string] => Array.isArray(entry)),
 );

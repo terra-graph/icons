@@ -34,28 +34,40 @@ describe('AwsIcon', () => {
     const entry = {
       key: 'custom',
       label: 'Custom',
-      path: '/abs/icon.svg',
-      filename: 'icon.svg',
+      formats: {
+        svg: {
+          path: '/abs/icon.svg',
+          filename: 'icon.svg',
+        },
+        png: {
+          path: '/abs/icon.png',
+          filename: 'icon.png',
+        },
+      },
     };
     const icon = AwsIcon.fromEntry(entry);
 
     expect(icon.key).toBe(entry.key);
     expect(icon.label).toBe(entry.label);
-    expect(icon.path).toBe(entry.path);
-    expect(icon.filename).toBe(entry.filename);
-    expect(icon.url()).toContain('/abs/icon.svg');
+    expect(icon.path('svg')).toBe(entry.formats.svg.path);
+    expect(icon.filename('png')).toBe(entry.formats.png.filename);
+    expect(icon.url('svg')).toContain('/abs/icon.svg');
   });
 
   it('prefixes module-relative paths for urls', () => {
     const entry = {
       key: 'rel',
       label: 'Rel',
-      path: 'vendor/aws/icon.svg',
-      filename: 'icon.svg',
+      formats: {
+        svg: {
+          path: 'vendor/aws/icon.svg',
+          filename: 'icon.svg',
+        },
+      },
     };
     const icon = AwsIcon.fromEntry(entry);
 
-    expect(icon.url()).toContain('/vendor/aws/icon.svg');
+    expect(icon.url('svg')).toContain('/vendor/aws/icon.svg');
   });
 
   it('returns file paths in node runtimes', () => {
@@ -63,7 +75,7 @@ describe('AwsIcon', () => {
     const icon = AwsIcon.fromTerraformResource(resource);
     expect(icon).toBeDefined();
 
-    const filePath = icon?.filePath();
+    const filePath = icon?.filePath('svg');
     expect(filePath).toContain('vendor');
     expect(filePath).toContain('aws');
   });
@@ -72,8 +84,12 @@ describe('AwsIcon', () => {
     const entry = {
       key: 'custom',
       label: 'Custom',
-      path: 'vendor/aws/icon.svg',
-      filename: 'icon.svg',
+      formats: {
+        svg: {
+          path: 'vendor/aws/icon.svg',
+          filename: 'icon.svg',
+        },
+      },
     };
     const icon = AwsIcon.fromEntry(entry);
 
@@ -84,11 +100,27 @@ describe('AwsIcon', () => {
     });
 
     try {
-      expect(() => icon.filePath()).toThrow('AwsIcon.filePath is Node-only');
+      expect(() => icon.filePath('svg')).toThrow('AwsIcon.filePath is Node-only');
     } finally {
       if (original) {
         Object.defineProperty(process.versions, 'node', original);
       }
     }
+  });
+
+  it('throws when the requested format is missing', () => {
+    const entry = {
+      key: 'custom',
+      label: 'Custom',
+      formats: {
+        svg: {
+          path: 'vendor/aws/icon.svg',
+          filename: 'icon.svg',
+        },
+      },
+    };
+    const icon = AwsIcon.fromEntry(entry);
+
+    expect(() => icon.url('png')).toThrow('AwsIcon missing png format for custom');
   });
 });

@@ -97,7 +97,7 @@ describe('AwsDotIconRule', () => {
     expect(icon).toBeDefined();
 
     const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
-    expect(dotAttrs.image).toBe(icon?.filePath());
+    expect(dotAttrs.image).toBe(icon?.filePath('svg'));
     expect(dotAttrs.shape).toBe('plaintext');
   });
 
@@ -130,7 +130,7 @@ describe('AwsDotIconRule', () => {
     expect(icon).toBeDefined();
 
     const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
-    expect(dotAttrs.image).toBe(icon?.filePath());
+    expect(dotAttrs.image).toBe(icon?.filePath('svg'));
     expect(dotAttrs.shape).toBe('box');
   });
 
@@ -154,7 +154,30 @@ describe('AwsDotIconRule', () => {
     expect(icon).toBeDefined();
 
     const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
-    expect(dotAttrs.image).toBe(icon?.url());
+    expect(dotAttrs.image).toBe(icon?.url('svg'));
+  });
+
+  it('uses png images when imageFormat is png', () => {
+    const rule = new AwsDotIconRule({ imageFormat: 'png' });
+    const { graph, nodeId } = makeGraph('aws_lambda_function');
+    const adapter = new DotAdapter().withTgGraph(graph);
+    const node = adapter.getNodeAttributes(nodeId);
+    if (!node) {
+      throw new Error('missing node');
+    }
+
+    expect(rule.match(nodeId, node, adapter)).toBe(true);
+    const updated = rule.apply(nodeId, node, adapter) as DotAdapter;
+    const updatedNode = updated.getNodeAttributes(nodeId);
+    if (!updatedNode) {
+      throw new Error('missing updated node');
+    }
+
+    const icon = AwsIcon.fromTerraformResource('aws_lambda_function');
+    expect(icon).toBeDefined();
+
+    const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
+    expect(dotAttrs.image).toBe(icon?.filePath('png'));
   });
 
   it('normalizes file URLs when using filePath mode', () => {
@@ -170,10 +193,11 @@ describe('AwsDotIconRule', () => {
     const spy = jest.spyOn(AwsIcon, 'fromTerraformResource').mockReturnValue({
       url: () => fakeFileUrl,
       filePath: () => fakeFileUrl,
+      hasFormat: () => true,
       key: 'fake',
       label: 'Fake',
-      path: fakeFileUrl,
-      filename: 'aws-icon.svg',
+      path: () => fakeFileUrl,
+      filename: () => 'aws-icon.svg',
     } as unknown as AwsIcon);
 
     try {
@@ -186,6 +210,35 @@ describe('AwsDotIconRule', () => {
 
       const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
       expect(dotAttrs.image).toBe(fileURLToPath(fakeFileUrl));
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it('throws when requested format is missing in node runtimes', () => {
+    const rule = new AwsDotIconRule({ imageFormat: 'png' });
+    const { graph, nodeId } = makeGraph('aws_lambda_function');
+    const adapter = new DotAdapter().withTgGraph(graph);
+    const node = adapter.getNodeAttributes(nodeId);
+    if (!node) {
+      throw new Error('missing node');
+    }
+
+    const spy = jest.spyOn(AwsIcon, 'fromTerraformResource').mockReturnValue({
+      url: () => 'file:///tmp/missing.png',
+      filePath: () => 'file:///tmp/missing.png',
+      hasFormat: () => false,
+      key: 'fake',
+      label: 'Fake',
+      path: () => 'file:///tmp/missing.png',
+      filename: () => 'missing.png',
+    } as unknown as AwsIcon);
+
+    try {
+      expect(rule.match(nodeId, node, adapter)).toBe(true);
+      expect(() => rule.apply(nodeId, node, adapter)).toThrow(
+        'Missing png format for AWS icon fake',
+      );
     } finally {
       spy.mockRestore();
     }

@@ -20,6 +20,7 @@ export interface DotNodeOptions extends Record<string, unknown> {
 
 type ResolvedAwsDotIconOptions = {
   imageMode: 'url' | 'filePath';
+  imageFormat: 'svg' | 'png';
   dot: DotNodeOptions;
 };
 
@@ -35,6 +36,7 @@ const defaultDotAttributes: DotNodeOptions = {
 
 export interface DotIconRuleOptions extends Record<string, unknown> {
   imageMode?: 'url' | 'filePath';
+  imageFormat?: 'svg' | 'png';
   // dot?: Record<string, unknown>;
   dot?: DotNodeOptions;
 }
@@ -42,6 +44,7 @@ export interface DotIconRuleOptions extends Record<string, unknown> {
 const resolveOptions = (options: DotIconRuleOptions | undefined): ResolvedAwsDotIconOptions => {
   return {
     imageMode: options?.imageMode ?? 'filePath',
+    imageFormat: options?.imageFormat ?? 'svg',
     dot: { ...defaultDotAttributes, ...(options?.dot ?? {}) },
   };
 };
@@ -61,6 +64,10 @@ const normalizeFilePath = (value: string): string => {
     return fileURLToPath(value);
   }
   return value;
+};
+
+const isNodeRuntime = (): boolean => {
+  return typeof process !== 'undefined' && typeof process.versions?.node === 'string';
 };
 
 export class AwsDotIconRule extends NodeRule {
@@ -97,9 +104,17 @@ export class AwsDotIconRule extends NodeRule {
       return graph;
     }
 
-    const iconUrl = icon.url();
+    const imageFormat = this.options.imageFormat;
+
+    if (isNodeRuntime() && !icon.hasFormat(imageFormat)) {
+      throw new Error(`Missing ${imageFormat} format for AWS icon ${icon.key}`);
+    }
+
+    const iconUrl = icon.url(imageFormat);
     const iconFilePath =
-      this.options.imageMode === 'filePath' ? normalizeFilePath(icon.filePath()) : undefined;
+      this.options.imageMode === 'filePath'
+        ? normalizeFilePath(icon.filePath(imageFormat))
+        : undefined;
     const image = iconFilePath ?? iconUrl;
 
     const adapterKey = DotAdapter.name;
