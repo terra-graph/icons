@@ -68,4 +68,21 @@ describe('AwsDotIconPlugin', () => {
     expect(dotAttrs.image).toBe(icon?.filePath('svg'));
     expect(dotAttrs.shape).toBe('box');
   });
+
+  it('defaults plugin options to an empty object', () => {
+    const plugin = new AwsDotIconPlugin();
+    const result = plugin.build({
+      options: undefined as unknown as never,
+      namedRules: undefined as unknown as never,
+      namedRuleSets: undefined as unknown as never,
+    });
+
+    const rule = result.phases?.[0]?.rules?.[0] as AwsDotIconRule | undefined;
+    if (!rule) {
+      throw new Error('missing rule');
+    }
+
+    const serialized = rule.serialize();
+    expect(serialized.config.options).toEqual({});
+  });
 });

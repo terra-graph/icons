@@ -14,7 +14,17 @@ export class AwsDotIconPlugin extends GraphPlugin<DotIconRuleOptions> {
 
   public override build(input: GraphPluginBuildInput<DotIconRuleOptions>): GraphPluginBuildResult {
     return {
-      phases: [{ phase: 'main', rules: [new AwsDotIconRule(input.options)] }],
+      phases: [
+        {
+          phase: 'main',
+          rules: [
+            new AwsDotIconRule({
+              node: { attr: { key: 'terraform.resource', startsWith: 'aws_' } },
+              options: input.options ?? {},
+            }),
+          ],
+        },
+      ],
     };
   }
 }

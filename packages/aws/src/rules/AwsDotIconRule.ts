@@ -4,6 +4,7 @@ import {
   DotAdapter,
   type NodeId,
   NodeRule,
+  type NodeRuleConfig,
   type TgNodeAttributes,
 } from '@terra-graph/core';
 import { AwsIcon } from '../AwsIcon.js';
@@ -71,16 +72,6 @@ const isNodeRuntime = (): boolean => {
 };
 
 export class AwsDotIconRule extends NodeRule {
-  private readonly options: ResolvedAwsDotIconOptions;
-
-  constructor(options: DotIconRuleOptions = {}) {
-    super({
-      node: { attr: { key: 'terraform.resource', startsWith: 'aws_' } },
-      options: {},
-    });
-    this.options = resolveOptions(options);
-  }
-
   public override supports(adapter: AdapterOperations): boolean {
     return adapter instanceof DotAdapter;
   }
@@ -104,7 +95,8 @@ export class AwsDotIconRule extends NodeRule {
       return graph;
     }
 
-    const imageFormat = this.options.imageFormat;
+    const resolvedOptions = resolveOptions(this.config.options as DotIconRuleOptions | undefined);
+    const imageFormat = resolvedOptions.imageFormat;
 
     if (isNodeRuntime() && !icon.hasFormat(imageFormat)) {
       throw new Error(`Missing ${imageFormat} format for AWS icon ${icon.key}`);
@@ -112,7 +104,7 @@ export class AwsDotIconRule extends NodeRule {
 
     const iconUrl = icon.url(imageFormat);
     const iconFilePath =
-      this.options.imageMode === 'filePath'
+      resolvedOptions.imageMode === 'filePath'
         ? normalizeFilePath(icon.filePath(imageFormat))
         : undefined;
     const image = iconFilePath ?? iconUrl;
@@ -120,7 +112,7 @@ export class AwsDotIconRule extends NodeRule {
     const adapterKey = DotAdapter.name;
     const adapterAttributes = {
       ...(node.adapter?.[adapterKey] ?? {}),
-      ...this.options.dot,
+      ...resolvedOptions.dot,
       image,
     };
 

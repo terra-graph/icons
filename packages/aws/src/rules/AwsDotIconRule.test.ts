@@ -7,8 +7,9 @@ import {
   type TgGraph,
   tgNodeIdFrom,
 } from '@terra-graph/core';
+import { BaseRule } from '@terra-graph/core/Graph/Rules/Rule.js';
 import { AwsIcon } from '../AwsIcon.js';
-import { AwsDotIconRule, type DotNodeOptions } from './AwsDotIconRule.js';
+import { AwsDotIconRule, type DotIconRuleOptions, type DotNodeOptions } from './AwsDotIconRule.js';
 
 const makeGraph = (resource: string): { graph: TgGraph; nodeId: NodeId } => {
   const nodeId = tgNodeIdFrom('resource', `${resource}.example`);
@@ -29,15 +30,21 @@ const makeGraph = (resource: string): { graph: TgGraph; nodeId: NodeId } => {
   return { graph, nodeId };
 };
 
+const makeRule = (options: DotIconRuleOptions = {}): AwsDotIconRule =>
+  new AwsDotIconRule({
+    node: { attr: { key: 'terraform.resource', startsWith: 'aws_' } },
+    options,
+  });
+
 describe('AwsDotIconRule', () => {
   it('only supports DotAdapter', () => {
-    const rule = new AwsDotIconRule();
+    const rule = makeRule();
     expect(rule.supports(new DotAdapter())).toBe(true);
     expect(rule.supports(new GraphologyAdapter())).toBe(false);
   });
 
   it('skips nodes that were not matched', () => {
-    const rule = new AwsDotIconRule();
+    const rule = makeRule();
     const { graph, nodeId } = makeGraph('aws_lambda_function');
     const adapter = new DotAdapter().withTgGraph(graph);
     const node = adapter.getNodeAttributes(nodeId);
@@ -50,7 +57,7 @@ describe('AwsDotIconRule', () => {
   });
 
   it('skips nodes that do not match the aws resource query', () => {
-    const rule = new AwsDotIconRule();
+    const rule = makeRule();
     const { graph, nodeId } = makeGraph('google_storage_bucket');
     const adapter = new DotAdapter().withTgGraph(graph);
     const node = adapter.getNodeAttributes(nodeId);
@@ -64,7 +71,7 @@ describe('AwsDotIconRule', () => {
   });
 
   it('skips when no icon mapping exists', () => {
-    const rule = new AwsDotIconRule();
+    const rule = makeRule();
     const { graph, nodeId } = makeGraph('aws_missing_resource');
     const adapter = new DotAdapter().withTgGraph(graph);
     const node = adapter.getNodeAttributes(nodeId);
@@ -78,7 +85,7 @@ describe('AwsDotIconRule', () => {
   });
 
   it('applies dot image attributes for mapped resources', () => {
-    const rule = new AwsDotIconRule();
+    const rule = makeRule();
     const { graph, nodeId } = makeGraph('aws_lambda_function');
     const adapter = new DotAdapter().withTgGraph(graph);
     const node = adapter.getNodeAttributes(nodeId);
@@ -111,7 +118,7 @@ describe('AwsDotIconRule', () => {
       fixedsixe: true,
       imagepos: 'tc',
     };
-    const rule = new AwsDotIconRule({ imageMode: 'filePath', dot: dotOverrides });
+    const rule = makeRule({ imageMode: 'filePath', dot: dotOverrides });
     const { graph, nodeId } = makeGraph('aws_lambda_function');
     const adapter = new DotAdapter().withTgGraph(graph);
     const node = adapter.getNodeAttributes(nodeId);
@@ -135,7 +142,7 @@ describe('AwsDotIconRule', () => {
   });
 
   it('uses url images when imageMode is url', () => {
-    const rule = new AwsDotIconRule({ imageMode: 'url' });
+    const rule = makeRule({ imageMode: 'url' });
     const { graph, nodeId } = makeGraph('aws_lambda_function');
     const adapter = new DotAdapter().withTgGraph(graph);
     const node = adapter.getNodeAttributes(nodeId);
@@ -158,7 +165,7 @@ describe('AwsDotIconRule', () => {
   });
 
   it('uses png images when imageFormat is png', () => {
-    const rule = new AwsDotIconRule({ imageFormat: 'png' });
+    const rule = makeRule({ imageFormat: 'png' });
     const { graph, nodeId } = makeGraph('aws_lambda_function');
     const adapter = new DotAdapter().withTgGraph(graph);
     const node = adapter.getNodeAttributes(nodeId);
@@ -180,8 +187,44 @@ describe('AwsDotIconRule', () => {
     expect(dotAttrs.image).toBe(icon?.filePath('png'));
   });
 
+  it('preserves options when serialized and rehydrated', () => {
+    const dotOverrides: DotNodeOptions = {
+      shape: 'box',
+      imagescale: true,
+      labelloc: 'b',
+      height: 1.6,
+      width: 1.2,
+      fixedsixe: true,
+      imagepos: 'tc',
+    };
+    const rule = makeRule({ imageFormat: 'png', dot: dotOverrides });
+    const serialized = rule.serialize();
+    const restored = BaseRule.fromSerialized(serialized) as AwsDotIconRule;
+
+    const { graph, nodeId } = makeGraph('aws_lambda_function');
+    const adapter = new DotAdapter().withTgGraph(graph);
+    const node = adapter.getNodeAttributes(nodeId);
+    if (!node) {
+      throw new Error('missing node');
+    }
+
+    expect(restored.match(nodeId, node, adapter)).toBe(true);
+    const updated = restored.apply(nodeId, node, adapter) as DotAdapter;
+    const updatedNode = updated.getNodeAttributes(nodeId);
+    if (!updatedNode) {
+      throw new Error('missing updated node');
+    }
+
+    const icon = AwsIcon.fromTerraformResource('aws_lambda_function');
+    expect(icon).toBeDefined();
+
+    const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
+    expect(dotAttrs.image).toBe(icon?.filePath('png'));
+    expect(dotAttrs.shape).toBe('box');
+  });
+
   it('normalizes file URLs when using filePath mode', () => {
-    const rule = new AwsDotIconRule({ imageMode: 'filePath' });
+    const rule = makeRule({ imageMode: 'filePath' });
     const { graph, nodeId } = makeGraph('aws_lambda_function');
     const adapter = new DotAdapter().withTgGraph(graph);
     const node = adapter.getNodeAttributes(nodeId);
@@ -216,7 +259,7 @@ describe('AwsDotIconRule', () => {
   });
 
   it('throws when requested format is missing in node runtimes', () => {
-    const rule = new AwsDotIconRule({ imageFormat: 'png' });
+    const rule = makeRule({ imageFormat: 'png' });
     const { graph, nodeId } = makeGraph('aws_lambda_function');
     const adapter = new DotAdapter().withTgGraph(graph);
     const node = adapter.getNodeAttributes(nodeId);
@@ -245,7 +288,7 @@ describe('AwsDotIconRule', () => {
   });
 
   it('returns early if a matched node loses terraform data', () => {
-    const rule = new AwsDotIconRule();
+    const rule = makeRule();
     const { graph, nodeId } = makeGraph('aws_lambda_function');
     const adapter = new DotAdapter().withTgGraph(graph);
     const node = adapter.getNodeAttributes(nodeId);
@@ -259,7 +302,7 @@ describe('AwsDotIconRule', () => {
   });
 
   it('returns early if terraform resource is not a string', () => {
-    const rule = new AwsDotIconRule();
+    const rule = makeRule();
     const { graph, nodeId } = makeGraph('aws_lambda_function');
     const adapter = new DotAdapter().withTgGraph(graph);
     const node = adapter.getNodeAttributes(nodeId);
