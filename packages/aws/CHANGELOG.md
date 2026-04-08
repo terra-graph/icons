@@ -1,3 +1,9 @@
+## [1.0.0-rc.7](https://github.com/terra-graph/icons/compare/terra-graph-icons-aws@1.0.0-rc.6...terra-graph-icons-aws@1.0.0-rc.7) (2026-04-08)
+
+### Features
+
+* allow image format to be specified for aws plugin ([b14ba4f](https://github.com/terra-graph/icons/commit/b14ba4fb01853c0075f82f75729cceea7e5c0685))
+
 ## [1.0.0-rc.6](https://github.com/terra-graph/icons/compare/terra-graph-icons-aws@1.0.0-rc.5...terra-graph-icons-aws@1.0.0-rc.6) (2026-04-07)
 
 ### Bug Fixes
