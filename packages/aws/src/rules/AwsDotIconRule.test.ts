@@ -70,7 +70,7 @@ describe('AwsDotIconRule', () => {
     expect(updated).toBe(adapter);
   });
 
-  it('skips when no icon mapping exists', () => {
+  it('applies fallback icon when no icon mapping exists', () => {
     const rule = makeRule();
     const { graph, nodeId } = makeGraph('aws_missing_resource');
     const adapter = new DotAdapter().withTgGraph(graph);
@@ -80,8 +80,18 @@ describe('AwsDotIconRule', () => {
     }
 
     expect(rule.match(nodeId, node, adapter)).toBe(true);
-    const updated = rule.apply(nodeId, node, adapter);
-    expect(updated).toBe(adapter);
+    const updated = rule.apply(nodeId, node, adapter) as DotAdapter;
+    const updatedNode = updated.getNodeAttributes(nodeId);
+    if (!updatedNode) {
+      throw new Error('missing updated node');
+    }
+
+    const icon = AwsIcon.fromManifestKey('aws-cloud');
+    expect(icon).toBeDefined();
+
+    const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
+    expect(dotAttrs.image).toBe(icon?.filePath('svg'));
+    expect(dotAttrs.shape).toBe('plaintext');
   });
 
   it('applies dot image attributes for mapped resources', () => {
@@ -164,6 +174,29 @@ describe('AwsDotIconRule', () => {
     expect(dotAttrs.image).toBe(icon?.url('svg'));
   });
 
+  it('uses fallback url images when imageMode is url and mapping is missing', () => {
+    const rule = makeRule({ imageMode: 'url' });
+    const { graph, nodeId } = makeGraph('aws_missing_resource');
+    const adapter = new DotAdapter().withTgGraph(graph);
+    const node = adapter.getNodeAttributes(nodeId);
+    if (!node) {
+      throw new Error('missing node');
+    }
+
+    expect(rule.match(nodeId, node, adapter)).toBe(true);
+    const updated = rule.apply(nodeId, node, adapter) as DotAdapter;
+    const updatedNode = updated.getNodeAttributes(nodeId);
+    if (!updatedNode) {
+      throw new Error('missing updated node');
+    }
+
+    const icon = AwsIcon.fromManifestKey('aws-cloud');
+    expect(icon).toBeDefined();
+
+    const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
+    expect(dotAttrs.image).toBe(icon?.url('svg'));
+  });
+
   it('uses png images when imageFormat is png', () => {
     const rule = makeRule({ imageFormat: 'png' });
     const { graph, nodeId } = makeGraph('aws_lambda_function');
@@ -181,6 +214,29 @@ describe('AwsDotIconRule', () => {
     }
 
     const icon = AwsIcon.fromTerraformResource('aws_lambda_function');
+    expect(icon).toBeDefined();
+
+    const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
+    expect(dotAttrs.image).toBe(icon?.filePath('png'));
+  });
+
+  it('uses fallback png images when imageFormat is png and mapping is missing', () => {
+    const rule = makeRule({ imageFormat: 'png' });
+    const { graph, nodeId } = makeGraph('aws_missing_resource');
+    const adapter = new DotAdapter().withTgGraph(graph);
+    const node = adapter.getNodeAttributes(nodeId);
+    if (!node) {
+      throw new Error('missing node');
+    }
+
+    expect(rule.match(nodeId, node, adapter)).toBe(true);
+    const updated = rule.apply(nodeId, node, adapter) as DotAdapter;
+    const updatedNode = updated.getNodeAttributes(nodeId);
+    if (!updatedNode) {
+      throw new Error('missing updated node');
+    }
+
+    const icon = AwsIcon.fromManifestKey('aws-cloud');
     expect(icon).toBeDefined();
 
     const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
@@ -284,6 +340,60 @@ describe('AwsDotIconRule', () => {
       );
     } finally {
       spy.mockRestore();
+    }
+  });
+
+  it('throws when fallback icon is missing the requested format in node runtimes', () => {
+    const rule = makeRule({ imageFormat: 'png' });
+    const { graph, nodeId } = makeGraph('aws_missing_resource');
+    const adapter = new DotAdapter().withTgGraph(graph);
+    const node = adapter.getNodeAttributes(nodeId);
+    if (!node) {
+      throw new Error('missing node');
+    }
+
+    const mappedSpy = jest.spyOn(AwsIcon, 'fromTerraformResource').mockReturnValue(undefined);
+    const fallbackSpy = jest.spyOn(AwsIcon, 'fromManifestKey').mockReturnValue({
+      url: () => 'file:///tmp/missing.png',
+      filePath: () => 'file:///tmp/missing.png',
+      hasFormat: () => false,
+      key: 'fake-fallback',
+      label: 'Fake fallback',
+      path: () => 'file:///tmp/missing.png',
+      filename: () => 'missing.png',
+    } as unknown as AwsIcon);
+
+    try {
+      expect(rule.match(nodeId, node, adapter)).toBe(true);
+      expect(() => rule.apply(nodeId, node, adapter)).toThrow(
+        'Missing png format for AWS icon fake-fallback',
+      );
+    } finally {
+      mappedSpy.mockRestore();
+      fallbackSpy.mockRestore();
+    }
+  });
+
+  it('throws when built-in fallback icon key is not registered', () => {
+    const rule = makeRule();
+    const { graph, nodeId } = makeGraph('aws_missing_resource');
+    const adapter = new DotAdapter().withTgGraph(graph);
+    const node = adapter.getNodeAttributes(nodeId);
+    if (!node) {
+      throw new Error('missing node');
+    }
+
+    const mappedSpy = jest.spyOn(AwsIcon, 'fromTerraformResource').mockReturnValue(undefined);
+    const fallbackSpy = jest.spyOn(AwsIcon, 'fromManifestKey').mockReturnValue(undefined);
+
+    try {
+      expect(rule.match(nodeId, node, adapter)).toBe(true);
+      expect(() => rule.apply(nodeId, node, adapter)).toThrow(
+        "Fallback AWS icon 'aws-cloud' is not registered",
+      );
+    } finally {
+      mappedSpy.mockRestore();
+      fallbackSpy.mockRestore();
     }
   });
 

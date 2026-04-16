@@ -85,4 +85,39 @@ describe('AwsDotIconPlugin', () => {
     const serialized = rule.serialize();
     expect(serialized.config.options).toEqual({});
   });
+
+  it('applies fallback icon for unmapped aws resources with default options', () => {
+    const plugin = new AwsDotIconPlugin();
+    const result = plugin.build({
+      options: undefined as unknown as never,
+      namedRules: undefined as unknown as never,
+      namedRuleSets: undefined as unknown as never,
+    });
+
+    const rule = result.phases?.[0]?.rules?.[0] as AwsDotIconRule | undefined;
+    if (!rule) {
+      throw new Error('missing rule');
+    }
+
+    const { graph, nodeId } = makeGraph('aws_missing_resource');
+    const adapter = new DotAdapter().withTgGraph(graph);
+    const node = adapter.getNodeAttributes(nodeId);
+    if (!node) {
+      throw new Error('missing node');
+    }
+
+    expect(rule.match(nodeId, node, adapter)).toBe(true);
+    const updated = rule.apply(nodeId, node, adapter) as DotAdapter;
+    const updatedNode = updated.getNodeAttributes(nodeId);
+    if (!updatedNode) {
+      throw new Error('missing updated node');
+    }
+
+    const fallback = AwsIcon.fromManifestKey('aws-cloud');
+    expect(fallback).toBeDefined();
+
+    const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
+    expect(dotAttrs.image).toBe(fallback?.filePath('svg'));
+    expect(dotAttrs.shape).toBe('plaintext');
+  });
 });

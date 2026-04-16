@@ -25,6 +25,8 @@ type ResolvedAwsDotIconOptions = {
   dot: DotNodeOptions;
 };
 
+const DEFAULT_FALLBACK_ICON_KEY = 'aws-cloud';
+
 const defaultDotAttributes: DotNodeOptions = {
   shape: 'plaintext', // none
   imagescale: true,
@@ -90,9 +92,11 @@ export class AwsDotIconRule extends NodeRule {
       return graph;
     }
 
-    const icon = AwsIcon.fromTerraformResource(terraformResource);
+    const icon =
+      AwsIcon.fromTerraformResource(terraformResource) ??
+      AwsIcon.fromManifestKey(DEFAULT_FALLBACK_ICON_KEY);
     if (!icon) {
-      return graph;
+      throw new Error(`Fallback AWS icon '${DEFAULT_FALLBACK_ICON_KEY}' is not registered`);
     }
 
     const resolvedOptions = resolveOptions(this.config.options as DotIconRuleOptions | undefined);
