@@ -31,7 +31,7 @@ describe('AwsDotIconPlugin', () => {
       labelloc: 'b',
       height: 1.6,
       width: 1.2,
-      fixedsixe: true,
+      fixedsize: true,
       imagepos: 'tc',
     };
 

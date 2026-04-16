@@ -115,7 +115,7 @@ describe('AwsDotIconRule', () => {
       labelloc: 'b',
       height: 1.6,
       width: 1.2,
-      fixedsixe: true,
+      fixedsize: true,
       imagepos: 'tc',
     };
     const rule = makeRule({ imageMode: 'filePath', dot: dotOverrides });
@@ -194,7 +194,7 @@ describe('AwsDotIconRule', () => {
       labelloc: 'b',
       height: 1.6,
       width: 1.2,
-      fixedsixe: true,
+      fixedsize: true,
       imagepos: 'tc',
     };
     const rule = makeRule({ imageFormat: 'png', dot: dotOverrides });
