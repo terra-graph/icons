@@ -15,7 +15,7 @@ export interface DotNodeOptions extends Record<string, unknown> {
   labelloc: string;
   height: number;
   width: number;
-  fixedsixe: boolean;
+  fixedsize: boolean;
   imagepos: string;
 }
 
@@ -31,7 +31,7 @@ const defaultDotAttributes: DotNodeOptions = {
   labelloc: 'b',
   height: 1.6,
   width: 1.2,
-  fixedsixe: true,
+  fixedsize: true,
   imagepos: 'tc',
 };
 

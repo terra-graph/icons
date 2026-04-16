@@ -1530,10 +1530,10 @@
   dependencies:
     "@sinonjs/commons" "^3.0.0"
 
-"@terra-graph/core@^1.0.0-rc.4":
-  version "1.0.0-rc.4"
-  resolved "https://registry.yarnpkg.com/@terra-graph/core/-/core-1.0.0-rc.4.tgz#1fc6054855d0ac40ecc3e41f76102e3799bb71b4"
-  integrity sha512-DIwVRxl/yksyndXm6HXHHt9LMwI4QPPkqhyDw/gNxUV85LwsnQpgkW5fKBkAyq3lkSk2wGM5IXSDDUoGw8S6DQ==
+"@terra-graph/core@^1.0.0-rc.6":
+  version "1.0.0-rc.6"
+  resolved "https://registry.yarnpkg.com/@terra-graph/core/-/core-1.0.0-rc.6.tgz#74ba86f0b13743c4bc2114068e59581acd795995"
+  integrity sha512-PuDipa9hFQhFh9PfJ/Hq/6lnxwBPU78a0DAqRzPsKBhIouxiK83H9zi/lfYwEOZ2QlxPt8DqRyR4H6z/3AXFyg==
   dependencies:
     graphlib-dot "^0.6.4"
     graphology "^0.26.0"
