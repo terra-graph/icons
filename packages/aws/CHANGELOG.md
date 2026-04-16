@@ -1,3 +1,10 @@
+## [1.0.0-rc.9](https://github.com/terra-graph/icons/compare/terra-graph-icons-aws@1.0.0-rc.8...terra-graph-icons-aws@1.0.0-rc.9) (2026-04-16)
+
+### Bug Fixes
+
+* typo for fixedsize prop ([b8cffc9](https://github.com/terra-graph/icons/commit/b8cffc9b3188976ffd4f76a5afb00468cdf3688c))
+* typo for fixedsize prop ([5dfe633](https://github.com/terra-graph/icons/commit/5dfe63338f98b8e3eb189e464ea4b4a84ee4eb13))
+
 ## [1.0.0-rc.8](https://github.com/terra-graph/icons/compare/terra-graph-icons-aws@1.0.0-rc.7...terra-graph-icons-aws@1.0.0-rc.8) (2026-04-08)
 
 ### Bug Fixes
