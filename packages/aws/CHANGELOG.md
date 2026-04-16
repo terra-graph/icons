@@ -1,3 +1,9 @@
+## [1.0.0-rc.10](https://github.com/terra-graph/icons/compare/terra-graph-icons-aws@1.0.0-rc.9...terra-graph-icons-aws@1.0.0-rc.10) (2026-04-16)
+
+### Features
+
+* add default cloud image for aws ([92d4a79](https://github.com/terra-graph/icons/commit/92d4a79c87fed9a5af5ce0de557ed0cf82c5bba6))
+
 ## [1.0.0-rc.9](https://github.com/terra-graph/icons/compare/terra-graph-icons-aws@1.0.0-rc.8...terra-graph-icons-aws@1.0.0-rc.9) (2026-04-16)
 
 ### Bug Fixes
