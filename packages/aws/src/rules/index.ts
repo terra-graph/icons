@@ -1,1 +1,1 @@
-export * from './AwsDotIconRule.js';
+export * from './AwsIconRule.js';

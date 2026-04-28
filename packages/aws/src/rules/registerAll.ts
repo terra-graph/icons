@@ -1,1 +1,1 @@
-import './AwsDotIconRule.js';
+import './AwsIconRule.js';

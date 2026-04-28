@@ -1,54 +1,28 @@
 import { fileURLToPath } from 'node:url';
 import {
   type AdapterOperations,
-  DotAdapter,
   type NodeId,
   NodeRule,
-  type NodeRuleConfig,
   type TgNodeAttributes,
 } from '@terra-graph/core';
 import { AwsIcon } from '../AwsIcon.js';
 
-export interface DotNodeOptions extends Record<string, unknown> {
-  shape: string;
-  imagescale: boolean;
-  labelloc: string;
-  height: number;
-  width: number;
-  fixedsize: boolean;
-  imagepos: string;
-}
-
 type ResolvedAwsDotIconOptions = {
   imageMode: 'url' | 'filePath';
   imageFormat: 'svg' | 'png';
-  dot: DotNodeOptions;
 };
 
 const DEFAULT_FALLBACK_ICON_KEY = 'aws-cloud';
 
-const defaultDotAttributes: DotNodeOptions = {
-  shape: 'plaintext', // none
-  imagescale: true,
-  labelloc: 'b',
-  height: 1.6,
-  width: 1.2,
-  fixedsize: true,
-  imagepos: 'tc',
-};
-
-export interface DotIconRuleOptions extends Record<string, unknown> {
+export interface IconRuleOptions extends Record<string, unknown> {
   imageMode?: 'url' | 'filePath';
   imageFormat?: 'svg' | 'png';
-  // dot?: Record<string, unknown>;
-  dot?: DotNodeOptions;
 }
 
-const resolveOptions = (options: DotIconRuleOptions | undefined): ResolvedAwsDotIconOptions => {
+const resolveOptions = (options: IconRuleOptions | undefined): ResolvedAwsDotIconOptions => {
   return {
     imageMode: options?.imageMode ?? 'filePath',
     imageFormat: options?.imageFormat ?? 'svg',
-    dot: { ...defaultDotAttributes, ...(options?.dot ?? {}) },
   };
 };
 
@@ -73,11 +47,7 @@ const isNodeRuntime = (): boolean => {
   return typeof process !== 'undefined' && typeof process.versions?.node === 'string';
 };
 
-export class AwsDotIconRule extends NodeRule {
-  public override supports(adapter: AdapterOperations): boolean {
-    return adapter instanceof DotAdapter;
-  }
-
+export class AwsIconRule extends NodeRule {
   public override apply(
     nodeId: NodeId,
     node: TgNodeAttributes,
@@ -99,7 +69,7 @@ export class AwsDotIconRule extends NodeRule {
       throw new Error(`Fallback AWS icon '${DEFAULT_FALLBACK_ICON_KEY}' is not registered`);
     }
 
-    const resolvedOptions = resolveOptions(this.config.options as DotIconRuleOptions | undefined);
+    const resolvedOptions = resolveOptions(this.config.options as IconRuleOptions | undefined);
     const imageFormat = resolvedOptions.imageFormat;
 
     if (isNodeRuntime() && !icon.hasFormat(imageFormat)) {
@@ -113,28 +83,17 @@ export class AwsDotIconRule extends NodeRule {
         : undefined;
     const image = iconFilePath ?? iconUrl;
 
-    const adapterKey = DotAdapter.name;
-    const adapterAttributes = {
-      ...(node.adapter?.[adapterKey] ?? {}),
-      ...resolvedOptions.dot,
-      image,
-    };
-
     return graph.setNodeAttributes(nodeId, {
       ...node,
-      // icon: {
-      //   provider: "aws",
-      //   key: icon.key,
-      //   label: icon.label,
-      //   url: iconUrl,
-      //   filePath: iconFilePath,
-      // },
-      adapter: {
-        ...(node.adapter ?? {}),
-        [adapterKey]: adapterAttributes,
+      hints: {
+        ...(node.hints ?? {}),
+        layout: {
+          ...(node.hints?.layout ?? {}),
+          image,
+        },
       },
     });
   }
 }
 
-NodeRule.register(AwsDotIconRule);
+NodeRule.register(AwsIconRule);

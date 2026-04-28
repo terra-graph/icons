@@ -1,7 +1,7 @@
 import { DotAdapter, type NodeId, type TgGraph, tgNodeIdFrom } from '@terra-graph/core';
 import { AwsIcon } from '../AwsIcon.js';
-import { AwsDotIconRule, type DotNodeOptions } from '../rules/AwsDotIconRule.js';
-import { AwsDotIconPlugin } from './AwsDotIconPlugin.js';
+import { AwsIconRule, type DotNodeOptions } from '../rules/AwsIconRule.js';
+import { AwsIconPlugin } from './AwsIconPlugin.js';
 
 const makeGraph = (resource: string): { graph: TgGraph; nodeId: NodeId } => {
   const nodeId = tgNodeIdFrom('resource', `${resource}.example`);
@@ -24,7 +24,7 @@ const makeGraph = (resource: string): { graph: TgGraph; nodeId: NodeId } => {
 
 describe('AwsDotIconPlugin', () => {
   it('builds semantics phase with the icon rule', () => {
-    const plugin = new AwsDotIconPlugin();
+    const plugin = new AwsIconPlugin();
     const dotOverrides: DotNodeOptions = {
       shape: 'box',
       imagescale: true,
@@ -44,8 +44,8 @@ describe('AwsDotIconPlugin', () => {
     expect(result.phases?.length).toBe(1);
     expect(result.phases?.[0]?.phase).toBe('main');
 
-    const rule = result.phases?.[0]?.rules?.[0] as AwsDotIconRule | undefined;
-    expect(rule).toBeInstanceOf(AwsDotIconRule);
+    const rule = result.phases?.[0]?.rules?.[0] as AwsIconRule | undefined;
+    expect(rule).toBeInstanceOf(AwsIconRule);
 
     const { graph, nodeId } = makeGraph('aws_lambda_function');
     const adapter = new DotAdapter().withTgGraph(graph);
@@ -70,14 +70,14 @@ describe('AwsDotIconPlugin', () => {
   });
 
   it('defaults plugin options to an empty object', () => {
-    const plugin = new AwsDotIconPlugin();
+    const plugin = new AwsIconPlugin();
     const result = plugin.build({
       options: undefined as unknown as never,
       namedRules: undefined as unknown as never,
       namedRuleSets: undefined as unknown as never,
     });
 
-    const rule = result.phases?.[0]?.rules?.[0] as AwsDotIconRule | undefined;
+    const rule = result.phases?.[0]?.rules?.[0] as AwsIconRule | undefined;
     if (!rule) {
       throw new Error('missing rule');
     }
@@ -87,14 +87,14 @@ describe('AwsDotIconPlugin', () => {
   });
 
   it('applies fallback icon for unmapped aws resources with default options', () => {
-    const plugin = new AwsDotIconPlugin();
+    const plugin = new AwsIconPlugin();
     const result = plugin.build({
       options: undefined as unknown as never,
       namedRules: undefined as unknown as never,
       namedRuleSets: undefined as unknown as never,
     });
 
-    const rule = result.phases?.[0]?.rules?.[0] as AwsDotIconRule | undefined;
+    const rule = result.phases?.[0]?.rules?.[0] as AwsIconRule | undefined;
     if (!rule) {
       throw new Error('missing rule');
     }

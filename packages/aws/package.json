@@ -42,10 +42,10 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "peerDependencies": {
-    "@terra-graph/core": "^1.0.0-rc.8"
+    "@terra-graph/core": "^1.0.0-rc.16"
   },
   "devDependencies": {
-    "@terra-graph/core": "^1.0.0-rc.8",
+    "@terra-graph/core": "^1.0.0-rc.16",
     "@types/node": "^22.13.10"
   }
 }

@@ -9,7 +9,7 @@ import {
 } from '@terra-graph/core';
 import { BaseRule } from '@terra-graph/core/Graph/Rules/Rule.js';
 import { AwsIcon } from '../AwsIcon.js';
-import { AwsDotIconRule, type DotIconRuleOptions, type DotNodeOptions } from './AwsDotIconRule.js';
+import { AwsIconRule, type IconRuleOptions, type DotNodeOptions } from './AwsIconRule.js';
 
 const makeGraph = (resource: string): { graph: TgGraph; nodeId: NodeId } => {
   const nodeId = tgNodeIdFrom('resource', `${resource}.example`);
@@ -30,8 +30,8 @@ const makeGraph = (resource: string): { graph: TgGraph; nodeId: NodeId } => {
   return { graph, nodeId };
 };
 
-const makeRule = (options: DotIconRuleOptions = {}): AwsDotIconRule =>
-  new AwsDotIconRule({
+const makeRule = (options: IconRuleOptions = {}): AwsIconRule =>
+  new AwsIconRule({
     node: { attr: { key: 'terraform.resource', startsWith: 'aws_' } },
     options,
   });
@@ -116,6 +116,7 @@ describe('AwsDotIconRule', () => {
     const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
     expect(dotAttrs.image).toBe(icon?.filePath('svg'));
     expect(dotAttrs.shape).toBe('plaintext');
+    expect(dotAttrs.fixedsize).toBe(false);
   });
 
   it('uses file paths and custom dot overrides when configured', () => {
@@ -255,7 +256,7 @@ describe('AwsDotIconRule', () => {
     };
     const rule = makeRule({ imageFormat: 'png', dot: dotOverrides });
     const serialized = rule.serialize();
-    const restored = BaseRule.fromSerialized(serialized) as AwsDotIconRule;
+    const restored = BaseRule.fromSerialized(serialized) as AwsIconRule;
 
     const { graph, nodeId } = makeGraph('aws_lambda_function');
     const adapter = new DotAdapter().withTgGraph(graph);

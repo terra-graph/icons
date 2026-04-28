@@ -1,8 +1,8 @@
 import { GraphPluginRegistry, type RuntimeProvider } from '@terra-graph/core';
-import { AWS_DOT_ICON_PLUGIN_NAME, AwsDotIconPlugin } from './plugins/AwsDotIconPlugin';
+import { AWS_ICON_PLUGIN_NAME, AwsIconPlugin } from './plugins/AwsIconPlugin';
 
 export default (): RuntimeProvider => ({
   plugins: new GraphPluginRegistry({
-    [AWS_DOT_ICON_PLUGIN_NAME]: new AwsDotIconPlugin(),
+    [AWS_ICON_PLUGIN_NAME]: new AwsIconPlugin(),
   }),
 });

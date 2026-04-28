@@ -4,7 +4,7 @@ import { AwsIcon } from './AwsIcon.js';
 import './rules/registerAll.js';
 import provider from './provider.js';
 
-export * from './plugins/AwsDotIconPlugin.js';
+export * from './plugins/AwsIconPlugin.js';
 export * from './rules/index.js';
 export { provider };
 export const runtimeProvider = provider;
