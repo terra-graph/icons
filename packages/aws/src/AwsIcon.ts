@@ -1,4 +1,3 @@
-import { fileURLToPath } from 'node:url';
 import awsIconManifest from '../generated/aws-icon-manifest.json';
 import terraformAwsIconMappings from '../mappings/terraform-aws-icons.json';
 import type {
@@ -6,7 +5,7 @@ import type {
   AwsIconManifest,
   AwsIconManifestEntry,
   AwsIconManifestFormatEntry,
-} from './index.js';
+} from './types.js';
 
 const manifest = awsIconManifest as AwsIconManifest;
 const mappings = terraformAwsIconMappings as Record<string, string>;
@@ -24,7 +23,13 @@ function toBrowserUrl(iconPath: string): string {
 }
 
 function toFilePath(iconPath: string): string {
-  return fileURLToPath(new URL(toModuleRelativePath(iconPath), import.meta.url));
+  const url = new URL(toModuleRelativePath(iconPath), import.meta.url);
+  if (url.protocol !== 'file:') {
+    throw new Error(`AwsIcon expected a file URL but received ${url.protocol}`);
+  }
+
+  const pathname = decodeURIComponent(url.pathname);
+  return /^\/[A-Za-z]:/.test(pathname) ? pathname.slice(1) : pathname;
 }
 
 function isNodeRuntime(): boolean {

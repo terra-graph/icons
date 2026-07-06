@@ -40,11 +40,13 @@ yarn build
 ## Usage
 
 ```ts
-import { AwsIcon, terraformAwsIconMap } from "@terra-graph/icons-aws";
+import { AwsIcon, terraformAwsIconMap } from "@terra-graph/icons-aws/browser";
 
 const lambdaIcon = AwsIcon.fromTerraformResource("aws_lambda_function")?.url("svg");
 const allIcons = terraformAwsIconMap;
 ```
+
+Use the package root only when you also need the Terra Graph runtime provider and plugin exports.
 
 ## Dot plugin
 

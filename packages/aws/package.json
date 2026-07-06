@@ -25,12 +25,16 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./browser": {
+      "types": "./dist/browser.d.ts",
+      "import": "./dist/browser.js"
+    },
     "./generated/aws-icon-manifest.json": "./generated/aws-icon-manifest.json",
     "./mappings/terraform-aws-icons.json": "./mappings/terraform-aws-icons.json",
     "./vendor/*": "./vendor/*"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts",
+    "build": "tsup src/index.ts src/browser.ts --format esm --dts",
     "clean": "rimraf dist",
     "generate": "node ./scripts/generate-aws-manifest.mjs",
     "generate:manifest": "node ./scripts/generate-aws-manifest.mjs",
@@ -43,6 +47,11 @@
   },
   "peerDependencies": {
     "@terra-graph/core": "^1.0.0-rc.16"
+  },
+  "peerDependenciesMeta": {
+    "@terra-graph/core": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@terra-graph/core": "^1.0.0-rc.16",
