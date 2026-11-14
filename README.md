@@ -8,7 +8,7 @@ Monorepo for Terra Graph icon packages.
 
 ## Monorepo notes
 
-This is a standard Yarn workspaces monorepo layout. I do not have your earlier `terra-graph-conventions` repo available here, so this follows the same general approach rather than reproducing that repo verbatim.
+This repository uses Yarn workspaces, with independently published packages under `packages/`.
 
 ## Getting started
 
