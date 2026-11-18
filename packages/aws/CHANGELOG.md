@@ -1,3 +1,11 @@
+## [@terra-graph/icons-aws-v1.0.0-rc.11](https://github.com/terra-graph/icons/compare/terra-graph-icons-aws@1.0.0-rc.10...terra-graph-icons-aws@1.0.0-rc.11) (2026-11-18)
+
+### Features
+
+* better image approach, not dot specific ([e6f8ce5](https://github.com/terra-graph/icons/commit/e6f8ce58a589c7bd370d9f304886f03aca28a923))
+* create browser specific exports ([9f64aff](https://github.com/terra-graph/icons/commit/9f64aff58de0f8ece71dc2f6e5728f4db1ac1dbf))
+* v1 release ([61b78e2](https://github.com/terra-graph/icons/commit/61b78e28835661e902933d75d3295f5c8816a05c))
+
 ## [1.0.0-rc.10](https://github.com/terra-graph/icons/compare/terra-graph-icons-aws@1.0.0-rc.9...terra-graph-icons-aws@1.0.0-rc.10) (2026-04-16)
 
 ### Features
