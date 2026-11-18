@@ -1,3 +1,9 @@
+## @terra-graph/icons-aws-v1.0.0 (2026-11-18)
+
+### Features
+
+* v1 release ([#1](https://github.com/terra-graph/icons/issues/1)) ([e61e319](https://github.com/terra-graph/icons/commit/e61e319af8ef13272b5981d6bea68a3454807a3b))
+
 ## [@terra-graph/icons-aws-v1.0.0-rc.11](https://github.com/terra-graph/icons/compare/terra-graph-icons-aws@1.0.0-rc.10...terra-graph-icons-aws@1.0.0-rc.11) (2026-11-18)
 
 ### Features
