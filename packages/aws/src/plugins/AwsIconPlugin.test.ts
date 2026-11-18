@@ -1,6 +1,6 @@
 import { DotAdapter, type NodeId, type TgGraph, tgNodeIdFrom } from '@terra-graph/core';
 import { AwsIcon } from '../AwsIcon.js';
-import { AwsIconRule, type DotNodeOptions } from '../rules/AwsIconRule.js';
+import { AwsIconRule } from '../rules/AwsIconRule.js';
 import { AwsIconPlugin } from './AwsIconPlugin.js';
 
 const makeGraph = (resource: string): { graph: TgGraph; nodeId: NodeId } => {
@@ -22,27 +22,18 @@ const makeGraph = (resource: string): { graph: TgGraph; nodeId: NodeId } => {
   return { graph, nodeId };
 };
 
-describe('AwsDotIconPlugin', () => {
-  it('builds semantics phase with the icon rule', () => {
+describe('AwsIconPlugin.build', () => {
+  it('builds the pre phase with the icon rule', () => {
     const plugin = new AwsIconPlugin();
-    const dotOverrides: DotNodeOptions = {
-      shape: 'box',
-      imagescale: true,
-      labelloc: 'b',
-      height: 1.6,
-      width: 1.2,
-      fixedsize: true,
-      imagepos: 'tc',
-    };
 
     const result = plugin.build({
-      options: { imageMode: 'filePath', dot: dotOverrides },
+      options: { imageMode: 'filePath' },
       namedRules: undefined as unknown as never,
       namedRuleSets: undefined as unknown as never,
     });
 
     expect(result.phases?.length).toBe(1);
-    expect(result.phases?.[0]?.phase).toBe('main');
+    expect(result.phases?.[0]?.phase).toBe('pre');
 
     const rule = result.phases?.[0]?.rules?.[0] as AwsIconRule | undefined;
     expect(rule).toBeInstanceOf(AwsIconRule);
@@ -64,9 +55,8 @@ describe('AwsDotIconPlugin', () => {
     const icon = AwsIcon.fromTerraformResource('aws_lambda_function');
     expect(icon).toBeDefined();
 
-    const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
-    expect(dotAttrs.image).toBe(icon?.filePath('svg'));
-    expect(dotAttrs.shape).toBe('box');
+    const layout = updatedNode.hints?.layout;
+    expect(layout?.image).toBe(icon?.filePath('svg'));
   });
 
   it('defaults plugin options to an empty object', () => {
@@ -116,8 +106,7 @@ describe('AwsDotIconPlugin', () => {
     const fallback = AwsIcon.fromManifestKey('aws-cloud');
     expect(fallback).toBeDefined();
 
-    const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
-    expect(dotAttrs.image).toBe(fallback?.filePath('svg'));
-    expect(dotAttrs.shape).toBe('plaintext');
+    const layout = updatedNode.hints?.layout;
+    expect(layout?.image).toBe(fallback?.filePath('svg'));
   });
 });

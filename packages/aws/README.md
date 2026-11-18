@@ -48,11 +48,10 @@ const allIcons = terraformAwsIconMap;
 
 Use the package root only when you also need the Terra Graph runtime provider and plugin exports.
 
-## Dot plugin
+## Icon plugin
 
-`@terra-graph/icons-aws:plugin:dot` decorates nodes that have a
-`terraform.resource` attribute starting with `aws_`. It sets dot adapter
-attributes (including `image`) so Graphviz can render the AWS icon.
+`@terra-graph/icons-aws:plugin` decorates nodes that have a
+`terraform.resource` attribute starting with `aws_`. It sets the adapter-independent `hints.layout.image` while preserving existing hints and adapter attributes. Renderers decide how to display that image.
 
 The default `imageMode` is `filePath` (absolute filesystem path). Use `url`
 for browser contexts.
@@ -64,13 +63,10 @@ providers:
 profiles:
   my_profile:
     plugins:
-      - plugin: "@terra-graph/icons-aws:plugin:dot"
+      - plugin: "@terra-graph/icons-aws:plugin"
         options:
           imageMode: filePath
           imageFormat: svg
-          dot:
-            labelloc: b
-            imagescale: true
 ```
 
 ## Mapping strategy

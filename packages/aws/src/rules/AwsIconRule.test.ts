@@ -9,7 +9,7 @@ import {
 } from '@terra-graph/core';
 import { BaseRule } from '@terra-graph/core/Graph/Rules/Rule.js';
 import { AwsIcon } from '../AwsIcon.js';
-import { AwsIconRule, type IconRuleOptions, type DotNodeOptions } from './AwsIconRule.js';
+import { AwsIconRule, type IconRuleOptions } from './AwsIconRule.js';
 
 const makeGraph = (resource: string): { graph: TgGraph; nodeId: NodeId } => {
   const nodeId = tgNodeIdFrom('resource', `${resource}.example`);
@@ -36,11 +36,11 @@ const makeRule = (options: IconRuleOptions = {}): AwsIconRule =>
     options,
   });
 
-describe('AwsDotIconRule', () => {
-  it('only supports DotAdapter', () => {
+describe('AwsIconRule.apply', () => {
+  it('supports both graph adapters', () => {
     const rule = makeRule();
     expect(rule.supports(new DotAdapter())).toBe(true);
-    expect(rule.supports(new GraphologyAdapter())).toBe(false);
+    expect(rule.supports(new GraphologyAdapter())).toBe(true);
   });
 
   it('skips nodes that were not matched', () => {
@@ -89,12 +89,11 @@ describe('AwsDotIconRule', () => {
     const icon = AwsIcon.fromManifestKey('aws-cloud');
     expect(icon).toBeDefined();
 
-    const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
-    expect(dotAttrs.image).toBe(icon?.filePath('svg'));
-    expect(dotAttrs.shape).toBe('plaintext');
+    const layout = updatedNode.hints?.layout;
+    expect(layout?.image).toBe(icon?.filePath('svg'));
   });
 
-  it('applies dot image attributes for mapped resources', () => {
+  it('applies layout image hints for mapped resources', () => {
     const rule = makeRule();
     const { graph, nodeId } = makeGraph('aws_lambda_function');
     const adapter = new DotAdapter().withTgGraph(graph);
@@ -113,24 +112,15 @@ describe('AwsDotIconRule', () => {
     const icon = AwsIcon.fromTerraformResource('aws_lambda_function');
     expect(icon).toBeDefined();
 
-    const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
-    expect(dotAttrs.image).toBe(icon?.filePath('svg'));
-    expect(dotAttrs.shape).toBe('plaintext');
-    expect(dotAttrs.fixedsize).toBe(false);
+    const layout = updatedNode.hints?.layout;
+    expect(layout?.image).toBe(icon?.filePath('svg'));
   });
 
-  it('uses file paths and custom dot overrides when configured', () => {
-    const dotOverrides: DotNodeOptions = {
-      shape: 'box',
-      imagescale: true,
-      labelloc: 'b',
-      height: 1.6,
-      width: 1.2,
-      fixedsize: true,
-      imagepos: 'tc',
-    };
-    const rule = makeRule({ imageMode: 'filePath', dot: dotOverrides });
+  it('preserves existing hints and adapter attributes when adding an image', () => {
+    const rule = makeRule({ imageMode: 'filePath' });
     const { graph, nodeId } = makeGraph('aws_lambda_function');
+    graph.nodes[nodeId].hints = { layout: { text1: 'Worker' } };
+    graph.nodes[nodeId].adapter = { [DotAdapter.name]: { shape: 'box' } };
     const adapter = new DotAdapter().withTgGraph(graph);
     const node = adapter.getNodeAttributes(nodeId);
     if (!node) {
@@ -147,9 +137,10 @@ describe('AwsDotIconRule', () => {
     const icon = AwsIcon.fromTerraformResource('aws_lambda_function');
     expect(icon).toBeDefined();
 
-    const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
-    expect(dotAttrs.image).toBe(icon?.filePath('svg'));
-    expect(dotAttrs.shape).toBe('box');
+    const layout = updatedNode.hints?.layout;
+    expect(layout?.image).toBe(icon?.filePath('svg'));
+    expect(layout?.text1).toBe('Worker');
+    expect(updatedNode.adapter).toEqual({ [DotAdapter.name]: { shape: 'box' } });
   });
 
   it('uses url images when imageMode is url', () => {
@@ -171,8 +162,8 @@ describe('AwsDotIconRule', () => {
     const icon = AwsIcon.fromTerraformResource('aws_lambda_function');
     expect(icon).toBeDefined();
 
-    const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
-    expect(dotAttrs.image).toBe(icon?.url('svg'));
+    const layout = updatedNode.hints?.layout;
+    expect(layout?.image).toBe(icon?.url('svg'));
   });
 
   it('uses fallback url images when imageMode is url and mapping is missing', () => {
@@ -194,8 +185,8 @@ describe('AwsDotIconRule', () => {
     const icon = AwsIcon.fromManifestKey('aws-cloud');
     expect(icon).toBeDefined();
 
-    const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
-    expect(dotAttrs.image).toBe(icon?.url('svg'));
+    const layout = updatedNode.hints?.layout;
+    expect(layout?.image).toBe(icon?.url('svg'));
   });
 
   it('uses png images when imageFormat is png', () => {
@@ -217,8 +208,8 @@ describe('AwsDotIconRule', () => {
     const icon = AwsIcon.fromTerraformResource('aws_lambda_function');
     expect(icon).toBeDefined();
 
-    const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
-    expect(dotAttrs.image).toBe(icon?.filePath('png'));
+    const layout = updatedNode.hints?.layout;
+    expect(layout?.image).toBe(icon?.filePath('png'));
   });
 
   it('uses fallback png images when imageFormat is png and mapping is missing', () => {
@@ -240,21 +231,12 @@ describe('AwsDotIconRule', () => {
     const icon = AwsIcon.fromManifestKey('aws-cloud');
     expect(icon).toBeDefined();
 
-    const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
-    expect(dotAttrs.image).toBe(icon?.filePath('png'));
+    const layout = updatedNode.hints?.layout;
+    expect(layout?.image).toBe(icon?.filePath('png'));
   });
 
   it('preserves options when serialized and rehydrated', () => {
-    const dotOverrides: DotNodeOptions = {
-      shape: 'box',
-      imagescale: true,
-      labelloc: 'b',
-      height: 1.6,
-      width: 1.2,
-      fixedsize: true,
-      imagepos: 'tc',
-    };
-    const rule = makeRule({ imageFormat: 'png', dot: dotOverrides });
+    const rule = makeRule({ imageFormat: 'png' });
     const serialized = rule.serialize();
     const restored = BaseRule.fromSerialized(serialized) as AwsIconRule;
 
@@ -275,9 +257,8 @@ describe('AwsDotIconRule', () => {
     const icon = AwsIcon.fromTerraformResource('aws_lambda_function');
     expect(icon).toBeDefined();
 
-    const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
-    expect(dotAttrs.image).toBe(icon?.filePath('png'));
-    expect(dotAttrs.shape).toBe('box');
+    const layout = updatedNode.hints?.layout;
+    expect(layout?.image).toBe(icon?.filePath('png'));
   });
 
   it('normalizes file URLs when using filePath mode', () => {
@@ -308,8 +289,8 @@ describe('AwsDotIconRule', () => {
         throw new Error('missing updated node');
       }
 
-      const dotAttrs = updatedNode.adapter?.[DotAdapter.name] as Record<string, unknown>;
-      expect(dotAttrs.image).toBe(fileURLToPath(fakeFileUrl));
+      const layout = updatedNode.hints?.layout;
+      expect(layout?.image).toBe(fileURLToPath(fakeFileUrl));
     } finally {
       spy.mockRestore();
     }

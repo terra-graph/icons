@@ -1,5 +1,6 @@
+import { jest } from '@jest/globals';
 import { AwsIcon } from './AwsIcon.js';
-import { terraformAwsIconKeys } from './index.js';
+import { terraformAwsIconKeys } from './browser.js';
 
 describe('AwsIcon', () => {
   it('resolves icons by terraform resource name', () => {
@@ -122,5 +123,66 @@ describe('AwsIcon', () => {
     const icon = AwsIcon.fromEntry(entry);
 
     expect(() => icon.url('png')).toThrow('AwsIcon missing png format for custom');
+  });
+});
+
+describe('AwsIcon.url', () => {
+  it.each(['./icons/test.svg', '../icons/test.svg'])(
+    'shoud preserve an explicit relative path %s',
+    (path) => {
+      const icon = AwsIcon.fromEntry({
+        key: 'relative',
+        label: 'Relative',
+        formats: { svg: { path, filename: 'test.svg' } },
+      });
+      expect(icon.url('svg')).toBe(
+        new URL(path, import.meta.url.replace('AwsIcon.test.ts', 'AwsIcon.ts')).href,
+      );
+    },
+  );
+});
+
+describe('AwsIcon.filePath', () => {
+  it('shoud reject a URL that does not use the file protocol', () => {
+    const icon = AwsIcon.fromManifestKey('aws-cloud');
+    const spy = jest
+      .spyOn(globalThis, 'URL')
+      .mockImplementation(() => ({ protocol: 'https:', pathname: '/icon.svg' }) as URL);
+    try {
+      expect(() => icon?.filePath('svg')).toThrow(
+        'AwsIcon expected a file URL but received https:',
+      );
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it('shoud normalize a Windows drive path', () => {
+    const icon = AwsIcon.fromManifestKey('aws-cloud');
+    const spy = jest
+      .spyOn(globalThis, 'URL')
+      .mockImplementation(() => ({ protocol: 'file:', pathname: '/C:/icons/test.svg' }) as URL);
+    try {
+      expect(icon?.filePath('svg')).toBe('C:/icons/test.svg');
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it('shoud reject file access when process is absent', () => {
+    const icon = AwsIcon.fromManifestKey('aws-cloud');
+    const descriptor = Object.getOwnPropertyDescriptor(globalThis, 'process');
+    let failure: unknown;
+    try {
+      Object.defineProperty(globalThis, 'process', { value: undefined, configurable: true });
+      try {
+        icon?.filePath('svg');
+      } catch (error) {
+        failure = error;
+      }
+    } finally {
+      if (descriptor) Object.defineProperty(globalThis, 'process', descriptor);
+    }
+    expect(failure).toEqual(new Error('AwsIcon.filePath is Node-only'));
   });
 });
